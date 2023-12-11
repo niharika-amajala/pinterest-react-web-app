@@ -1,7 +1,6 @@
 // Details.js
 import React, {useEffect, useState} from 'react';
 import {Link, useLocation, useNavigate} from 'react-router-dom';
-
 import {
   Wrapper,
   ImageContainer,
@@ -31,7 +30,7 @@ import {toast, ToastContainer} from "react-toastify";
 
 function Details() {
   const authToken = useSelector((state) => state.authReducer.token);
-
+  let isAuthenticated = useSelector((state) => state.authReducer.isAuthenticated);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -118,7 +117,7 @@ function Details() {
 
   return (
     <>
-      <Header onSearchSubmit={(term) => navigate(`/mainboard?q=${term}`)} /> {/* Header with search functionality */}
+      <Header onSearchSubmit={(term) => navigate(`/mainboard?q=${term}`)} isAuthenticated={isAuthenticated} /> {/* Header with search functionality */}
       <Wrapper>
         <ToastContainer />
         <ImageContainer>

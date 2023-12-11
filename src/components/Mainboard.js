@@ -11,6 +11,7 @@ function Mainboard({ pins = [] }) {
             <Pin
               key={index}
               urls={pin}
+              profileIcon="url/to/profile-icon.png"
             />
           );
         })}

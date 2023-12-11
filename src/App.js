@@ -141,7 +141,8 @@ function App() {
         Promise.all(randomPinSelection.map(category => client.getCategoryImages(category)))
           .then(results => {
             const combinedPins = results.flat();
-            let newPins = [ ...pins, ...combinedPins];
+            const filteredPins = pins.filter(res => !res.regular.startsWith("https://storage.googleapis.com/"));
+            let newPins = [ ...filteredPins, ...combinedPins];
             setCategoryPins(newPins);
           })
           .catch(error => {

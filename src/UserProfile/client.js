@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const PINTEREST_API_URL = 'http://localhost:8000';
+export const PINTEREST_API_URL = 'https://pinterest-enhanced-node-server.onrender.com';
 export const USERS_API = `${PINTEREST_API_URL}/users`;
 
 export const profile = async (userId) => {

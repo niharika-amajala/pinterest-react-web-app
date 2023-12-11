@@ -17,6 +17,9 @@ const UserIconSVG = () => (
   </svg>
 );
 
+const profileUserId = "user123";
+
+
 function Pin({ urls, profileIcon }) {
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state) => state.authReducer.isAuthenticated);
@@ -29,13 +32,8 @@ function Pin({ urls, profileIcon }) {
     if (isAuthenticated && urls.regular) {
       navigate(`/details?docId=${urls?.regular}&postId=${urls.id}&postUserId=${urls.userId}`);
     } else {
-      navigate("/login");
+      navigate("/profile");
     }
-  };
-
-  const handleProfileClick = () => {
-    // Pass isAuthenticated as a query parameter while navigating to the profile page
-    navigate(`/profile?isAuthenticated=${isAuthenticated}`);
   };
 
   return (
@@ -44,18 +42,6 @@ function Pin({ urls, profileIcon }) {
         <ClickableImage onClick={handleImageClick}>
           <img src={urls?.regular} alt="pin" />
         </ClickableImage>
-        {profileIcon ? (
-          <ClickableProfileIcon onClick={handleProfileClick}>
-            {/* Use the Avatar component with a fallback */}
-            <DummyProfileIcon onClick={handleProfileClick}>
-            <FaUser size={20} color="#555" /> {/* User icon */}
-          </DummyProfileIcon>
-          </ClickableProfileIcon>
-        ) : (
-          <DummyProfileIcon onClick={handleProfileClick}>
-          <FaUser size={20} color="#555" /> {/* User icon */}
-        </DummyProfileIcon>
-        )}
       </Container>
     </Wrapper>
   );

@@ -225,14 +225,12 @@ function App() {
           <Route
             path="/profile"
             element={
-              isAuthenticated ? (
+
                 <>
                   <Header onSearchSubmit={onSearchSubmit} isAuthenticated={isAuthenticated} />
                   <UserProfile />
                 </>
-              ) : (
-                <Navigate to="/login" />
-              )
+
             } />
           <Route path="/profile/:profileUserId" element={
             isAuthenticated ? (

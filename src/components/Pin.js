@@ -1,12 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { FaUser } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
+import Avatar from 'react-avatar'; // Import the Avatar component
 
 import * as client from './client';
 
 // Placeholder image for the dummy profile icon
 const placeholderImage = './images/profile.png';
+
+// User icon SVG
+const UserIconSVG = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40" fill="#000000">
+    {/* Add the SVG path data here */}
+  </svg>
+);
 
 function Pin({ urls, profileIcon }) {
   const navigate = useNavigate();
@@ -25,8 +34,8 @@ function Pin({ urls, profileIcon }) {
   };
 
   const handleProfileClick = () => {
-    // Add logic to navigate to the profile page when the profile icon is clicked
-    navigate("/profile");
+    // Pass isAuthenticated as a query parameter while navigating to the profile page
+    navigate(`/profile?isAuthenticated=${isAuthenticated}`);
   };
 
   return (
@@ -37,13 +46,15 @@ function Pin({ urls, profileIcon }) {
         </ClickableImage>
         {profileIcon ? (
           <ClickableProfileIcon onClick={handleProfileClick}>
-            <ProfileIcon src={profileIcon} alt="profile" />
+            {/* Use the Avatar component with a fallback */}
+            <DummyProfileIcon onClick={handleProfileClick}>
+            <FaUser size={20} color="#555" /> {/* User icon */}
+          </DummyProfileIcon>
           </ClickableProfileIcon>
         ) : (
-          <DummyProfileIcon
-            alt="dummy-profile"
-            onClick={handleProfileClick}
-          />
+          <DummyProfileIcon onClick={handleProfileClick}>
+          <FaUser size={20} color="#555" /> {/* User icon */}
+        </DummyProfileIcon>
         )}
       </Container>
     </Wrapper>
@@ -82,19 +93,15 @@ const ClickableProfileIcon = styled.div`
   margin-top: 8px; // Adjust the spacing as needed
 `;
 
-const ProfileIcon = styled.img`
-  width: 40px;  // Adjust the size as needed
-  height: 40px; // Adjust the size as needed
+const DummyProfileIcon = styled.div`
+  width: 32px;
+  height: 32px;
+  background-color: #f0f0f0; // Light color matching white background
   border-radius: 50%;
+  margin-top: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
-const DummyProfileIcon = styled.div`
-  width: 32px;  // Adjust the size as needed
-  height: 32px; // Adjust the size as needed
-  background-color: #ccc; // Adjust the background color as needed
-  border-radius: 50%;
-  margin-top: 8px; // Adjust the spacing as needed
-  cursor: pointer; // Add cursor style to indicate clickability
-  background-image: url(${placeholderImage});
-  background-size: cover;
-`;

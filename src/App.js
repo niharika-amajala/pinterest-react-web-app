@@ -39,7 +39,7 @@ function App() {
   const onSearchSubmit = (term) => {
     client.getCategoryImages(term).then((res) => {
       let newPins = [...res, ...pins];
-      newPins.sort(() => 0.5 - Math.random());
+      //newPins.sort(() => 0.5 - Math.random());
       setNewPins(newPins);
     });
   };
@@ -137,11 +137,12 @@ function App() {
       } else {
         const categoriesSet = ['cars', 'pets', 'flowers', 'nature', 'gift', 'pink', 'red', 'rainbow', 'frog', 'coding', 'makeup', 'street'];
         const shuffledCategories = categoriesSet.sort(() => 0.5 - Math.random());
-        let randomPinSelection = shuffledCategories.slice(0, 7);
+        let randomPinSelection = shuffledCategories.slice(0, 5);
         Promise.all(randomPinSelection.map(category => client.getCategoryImages(category)))
           .then(results => {
             const combinedPins = results.flat();
-            setCategoryPins(combinedPins);
+            let newPins = [ ...pins, ...combinedPins];
+            setCategoryPins(newPins);
           })
           .catch(error => {
             console.error('Error fetching category images:', error);

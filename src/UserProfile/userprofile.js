@@ -71,7 +71,7 @@ function UserProfile() {
   }, [profileUserId, authToken, isAuthenticated]);
 
   if (isLoading) {
-    return <Spinner message="Loading profile..." />;
+    return <Spinner message="Please wait.. Loading profile..." />;
   }
 
   if (!userData) {

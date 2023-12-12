@@ -2,15 +2,35 @@ import React from 'react';
 import { Circles } from 'react-loader-spinner';
 
 function Spinner({ message }) {
+  const spinnerContainerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100vw',
+    height: '100vh',
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    zIndex: 1000, 
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', 
+  };
+
+  const spinnerMessageStyle = {
+    marginTop: '20px',
+    fontSize: '1.5rem',
+    textAlign: 'center',
+    color: '#00BFFF',
+  };
+
   return (
-    <div className="flex flex-col justify-center items-center w-full h-full">
+    <div style={spinnerContainerStyle}>
       <Circles
         color="#00BFFF"
-        height={50}
-        width={200}
-        className="m-5"
+        height={100} 
+        width={100}
       />
-      <p className="text-lg text-center px-2">{message}</p>
+      <p style={spinnerMessageStyle}>{message}</p>
     </div>
   );
 }

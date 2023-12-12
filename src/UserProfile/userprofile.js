@@ -12,6 +12,7 @@ import SellerItems from '../Seller/SellerItems';
 import {Link, useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {jwtDecode} from "jwt-decode";
+import BlurredLoginPrompt from './BlurredPrompt';
 
 function UserProfile() {
   const {profileUserId} = useParams();
@@ -109,14 +110,18 @@ function UserProfile() {
 
             <UserPins posts={createdPosts} />
             ) : (
-              <div>You need to be logged in to see the pins you created.</div>
+              <div>
+                <BlurredLoginPrompt message={"created posts"}/>
+              </div>
             )}
           </TabPanel>
           <TabPanel>
             {isAuthenticated ? (
               <UserPins posts={savedPosts} />
             ) : (
-              <div>You need to be logged in to see the pins you saved.</div>
+              <div>
+                <BlurredLoginPrompt message={"saved posts"}/>
+              </div>
             )}
           </TabPanel>
           {isSeller && (

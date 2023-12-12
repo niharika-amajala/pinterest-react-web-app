@@ -84,7 +84,7 @@ function UserProfile() {
           <span>{userData.followers} Followers</span>
           <span>{userData.following} Following</span>
         </FollowInfo>
-        {!removeInfo && (
+        {(authToken && !removeInfo) && (
             <ButtonContainer>
               <StyledButton variant="outlined" color="primary">
                 <Link to={`/passwordEdit/${userId}`} style={{textDecoration: "none", color: "inherit"}}>

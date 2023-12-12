@@ -39,6 +39,7 @@
 }
 
 .login-card {
+  z-index: 10;
   margin-right: 10%;
   padding: 3rem;
   background: #fff;

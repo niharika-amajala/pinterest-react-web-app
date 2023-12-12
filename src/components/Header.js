@@ -8,14 +8,18 @@ import { IconButton } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import FaceIcon from '@material-ui/icons/Face';
 import SettingsIcon from '@material-ui/icons/Settings';
-import { useDispatch } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import { destroyToken } from '../authReducer';
 import AddIcon from '@material-ui/icons/Add';
 
+import * as profileClient from '../UserProfile/client';
+import {jwtDecode} from "jwt-decode";
+
 function Header({ onSearchSubmit, isAuthenticated }) {
+  const authToken = useSelector((state) => state.authReducer.token);
+
   const [input, setInput] = useState('');
   const [userRole, setUserRole] = useState(null);
-  const profileUserId = "user123";
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -24,9 +28,9 @@ function Header({ onSearchSubmit, isAuthenticated }) {
     // Fetch user data from local JSON file
     const fetchUserData = async () => {
       try {
-        const response = await fetch('/datasets/userdata.json');
-        const users = await response.json();
-        const currentUser = users.find(user => user.id === profileUserId);
+        let { id } = await jwtDecode(authToken);
+
+        const currentUser = await profileClient.profile(id);
         if (currentUser) {
           setUserRole(currentUser.role);
         }
@@ -104,7 +108,7 @@ function Header({ onSearchSubmit, isAuthenticated }) {
       </SearchWrapper>
 
       <IconsWrapper>
-        {userRole === 'admin' && isAuthenticated && (
+        {userRole === 'ADMIN' && isAuthenticated && (
           <StyledIconButton component={Link} to="/admin-dashboard">
             <SettingsIcon />
           </StyledIconButton>

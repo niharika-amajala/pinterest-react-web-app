@@ -26,7 +26,8 @@ export default function Login() {
       const credentials = { email, password };
       const response = await client.loginUser(credentials);
       const token = response.token;
-
+      localStorage.removeItem('lastSearchTerm');
+      localStorage.removeItem('lastSearchResults');
       dispatch(createToken(token));
       navigate('/mainboard');
       window.location.reload(); 

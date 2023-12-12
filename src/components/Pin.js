@@ -1,10 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaUser } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
-import Avatar from 'react-avatar'; // Import the Avatar component
-
 import * as client from './client';
 
 // Placeholder image for the dummy profile icon

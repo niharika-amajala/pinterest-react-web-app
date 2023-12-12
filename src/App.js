@@ -41,69 +41,42 @@ function App() {
       let newPins = [...res, ...pins];
       //newPins.sort(() => 0.5 - Math.random());
       setNewPins(newPins);
+      localStorage.setItem('lastSearchTerm', term);
+      localStorage.setItem('lastSearchResults', JSON.stringify(newPins));
     });
   };
 
   useEffect(() => {
-    const getNewPins = async () => {
-      let promises = [];
-      let pinData = [];
+    const lastSearchTerm = localStorage.getItem('lastSearchTerm');
+    const lastSearchResults = localStorage.getItem('lastSearchResults');
 
-      try {
-        const response = await client.getAllPosts();
-        let posts = response.data;
-        for (let index = 0; index < posts.length; index++) {
-          let post = posts[index];
-          posts[index] = {
-            ...post,
-            regular: post.docId,
-          };
-        }
+    if (lastSearchTerm && lastSearchResults) {
+      setNewPins(JSON.parse(lastSearchResults));
+    } else {
+      getNewPins();
+    }
 
-        pinData = posts;
+  }, []);
 
-        const allCategories = [...selectedCategories, 'coding', 'makeup', 'street', category].filter(Boolean);
+  const getNewPins = async () => {
+    let promises = [];
+    let pinData = [];
 
-        allCategories.forEach((pinTerm) => {
-          promises.push(
-            client.getCategoryImages(pinTerm).then((res) => {
-              res.forEach((result, index) => { });
-              pinData = pinData.concat(res);
-              pinData.sort(function (a, b) {
-                return 0.5 - Math.random();
-              });
-            })
-          );
-        });
-
-        Promise.all(promises).then(() => {
-          setNewPins(pinData);
-        });
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      }
-    };
-
-    getNewPins();
-  }, [selectedCategories, category]);
-
-  const handleExploreCategoriesSelected = (category) => {
-    console.log('Selected category from ExplorePage:', category);
-    setSelectedCategories(category);
-    const categoriesSet = ['cars', 'pets', 'flowers', 'nature', 'gift', 'pink', 'red', 'rainbow', 'frog', 'coding', 'makeup', 'street'];
-    const shuffledCategories = categoriesSet.sort(() => 0.5 - Math.random());
-    let randomPinSelection = shuffledCategories.slice(0, 7);
-    let shuffledPins = [...category, ...randomPinSelection];
-    setNewPins(shuffledPins);
-  };
-
-  const handleCategoriesSelected = (categories) => {
-    console.log('Selected categories:', categories);
-    setSelectedCategories(categories);
     try {
-      let promises = [];
-      let pinData = [];
-      const allCategories = [...categories, 'coding', 'makeup', 'street'];
+      const response = await client.getAllPosts();
+      let posts = response.data;
+      for (let index = 0; index < posts.length; index++) {
+        let post = posts[index];
+        posts[index] = {
+          ...post,
+          regular: post.docId,
+        };
+      }
+
+      pinData = posts;
+
+      const allCategories = [...selectedCategories, category].filter(Boolean);
+
       allCategories.forEach((pinTerm) => {
         promises.push(
           client.getCategoryImages(pinTerm).then((res) => {
@@ -125,15 +98,66 @@ function App() {
   };
 
 
-  function MainboardWrapper() {
-    const { category } = useParams();
+  const handleExploreCategoriesSelected = (category) => {
+    console.log('Selected category from ExplorePage:', category);
+    setSelectedCategories(category);
+    const categoriesSet = ['cars', 'pets', 'flowers', 'nature', 'gift', 'pink', 'red', 'rainbow', 'frog', 'coding', 'makeup', 'street'];
+    const shuffledCategories = categoriesSet.sort(() => 0.5 - Math.random());
+    let randomPinSelection = shuffledCategories.slice(0, 7);
+    let shuffledPins = [...category, ...randomPinSelection];
+    setNewPins(shuffledPins);
+  };
+
+  const handleCategoriesSelected = (categories) => {
+    console.log('Selected categories:', categories);
+    setSelectedCategories(categories);
+    try {
+      let promises = [];
+      let pinData = [];
+      const allCategories = [...categories];
+      allCategories.forEach((pinTerm) => {
+        promises.push(
+          client.getCategoryImages(pinTerm).then((res) => {
+            res.forEach((result, index) => { });
+            pinData = pinData.concat(res);
+            pinData.sort(function (a, b) {
+              return 0.5 - Math.random();
+            });
+          })
+        );
+      });
+
+      Promise.all(promises).then(() => {
+        setNewPins(pinData);
+      });
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+    }
+  };
+
+
+  function MainboardWrapper() {const { category } = useParams();
+    const isAuthenticated = useSelector((state) => state.authReducer.isAuthenticated);
     const [categoryPins, setCategoryPins] = useState([]);
 
     useEffect(() => {
+      const lastSearchTerm = localStorage.getItem('lastSearchTerm');
+      const lastSearchResults = localStorage.getItem('lastSearchResults');
       if (category) {
+        // Fetch category-specific images
         client.getCategoryImages(category).then((res) => {
           setCategoryPins(res);
         });
+      } else if (lastSearchTerm && lastSearchResults) {
+        let storedPins = JSON.parse(lastSearchResults);
+        if (!isAuthenticated) {
+          // Filter out pins from Google Storage for unregistered users
+          storedPins = storedPins.filter(pin => {
+            const url = pin.docId || pin.regular;
+            return url && typeof url === 'string' && !url.startsWith("https://storage.googleapis.com/");
+          });
+        }
+        setCategoryPins(storedPins);
       } else {
         const categoriesSet = ['cars', 'pets', 'flowers', 'nature', 'gift', 'pink', 'red', 'rainbow', 'frog', 'coding', 'makeup', 'street'];
         const shuffledCategories = categoriesSet.sort(() => 0.5 - Math.random());
@@ -141,8 +165,14 @@ function App() {
         Promise.all(randomPinSelection.map(category => client.getCategoryImages(category)))
           .then(results => {
             const combinedPins = results.flat();
-            const filteredPins = pins.filter(res => !res.regular.startsWith("https://storage.googleapis.com/"));
-            let newPins = [ ...filteredPins, ...combinedPins];
+            let filteredPins = pins;
+            if (!isAuthenticated) {
+              filteredPins = pins.filter(pin => {
+                const url = pin.docId || pin.regular;
+                return url && typeof url === 'string' && !url.startsWith("https://storage.googleapis.com/");
+              });
+            }
+            let newPins = [...filteredPins, ...combinedPins];
             setCategoryPins(newPins);
           })
           .catch(error => {
@@ -153,6 +183,7 @@ function App() {
 
     return <Mainboard pins={categoryPins} />;
   }
+
 
   useEffect(() => {
     handleCategoriesSelected(selectedCategories);
@@ -205,7 +236,7 @@ function App() {
               isAuthenticated ? (
                 <>
                   <Header onSearchSubmit={onSearchSubmit} isAuthenticated={isAuthenticated} />
-                  <Mainboard pins={pins} />
+                  <MainboardWrapper/>
                 </>
               ) : (
                 <Navigate to="/login" />

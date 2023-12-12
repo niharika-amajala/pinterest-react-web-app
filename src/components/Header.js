@@ -50,6 +50,8 @@ function Header({ onSearchSubmit, isAuthenticated }) {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    localStorage.removeItem('lastSearchTerm');
+    localStorage.removeItem('lastSearchResults');
     onSearchSubmit(input);
     setInput('');
     if (!isAuthenticated){
@@ -61,6 +63,8 @@ function Header({ onSearchSubmit, isAuthenticated }) {
 
   const handleSignout = () => {
     dispatch(destroyToken());
+    localStorage.removeItem('lastSearchTerm');
+    localStorage.removeItem('lastSearchResults');
     navigate('/login');
   };
 

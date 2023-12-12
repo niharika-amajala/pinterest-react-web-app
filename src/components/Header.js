@@ -193,6 +193,7 @@ const SearchWrapper = styled.div`
 const SearchBarWrapper = styled.div`
   background-color: #efefef;
   display: flex;
+  align-items: center;
   height: 48px;
   width: 100%;
   border-radius: 50px;
@@ -202,12 +203,14 @@ const SearchBarWrapper = styled.div`
   form {
     display: flex;
     flex: 1;
+    align-items: center;
   }
   form > input {
     background-color: transparent;
     border: none;
     width: 100%;
-    margin-left: 5px;
+    margin-left: 10px; /* Adjusted margin for the cursor position */
+    margin-top: 15px;   /* Added margin-top to move the cursor below */
     font-size: 16px;
   }
   form > button {
@@ -218,6 +221,8 @@ const SearchBarWrapper = styled.div`
     outline: none;
   }
 `;
+
+
 
 const IconsWrapper = styled.div`
   padding: 15px;

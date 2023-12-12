@@ -13,6 +13,7 @@ import {Link, useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {jwtDecode} from "jwt-decode";
 import BlurredLoginPrompt from './BlurredPrompt';
+import Spinner from "./Spinner";
 
 function UserProfile() {
   const {profileUserId} = useParams();
@@ -25,50 +26,53 @@ function UserProfile() {
   const [tabIndex, setTabIndex] = useState(0);
   const [userId, setUserId] = useState();
   const [removeInfo, setRemoveInfo] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const isSeller = userData.role === 'seller';
 
   let isAuthenticated = useSelector((state) => state.authReducer.isAuthenticated);
 
-  useEffect(async () => {
-    let removeEmail = false;
-
-    let id;
-    if(authToken) {
-      id = await jwtDecode(authToken);
-      id = id.id;
-    }
-
-    else {
-      id = 18;
-    }
-
-    setUserId(id);
-
-    if(profileUserId) {
-      if(id !== parseInt(profileUserId)) {
-        setRemoveInfo(true);
-        // removeEmail = true;
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true); // Start loading
+      let id;
+      if (authToken) {
+        const decoded = jwtDecode(authToken);
+        id = decoded.id;
+      } else {
+        id = 18; // Default ID
       }
-      id = profileUserId;
-    }
+      setUserId(id);
 
-    // handling the case for unauthorized users
-    if(!isAuthenticated) {
-      removeEmail = true;
-    }
+      if (profileUserId) {
+        if (id !== parseInt(profileUserId)) {
+          setRemoveInfo(true);
+        }
+        id = profileUserId;
+      }
 
-    const profile = await client.profile(id);
-    const createdPosts = await client.postsCreatedByUser(id);
-    const savedPosts = await client.postsSavedByUser(id);
+      try {
+        const profile = await client.profile(id);
+        const createdPostsData = await client.postsCreatedByUser(id);
+        const savedPostsData = await client.postsSavedByUser(id);
+        if (!isAuthenticated) {
+          profile.email = "";
+        }
+        setUserData(profile);
+        setCreatedPosts(createdPostsData);
+        setSavedPosts(savedPostsData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false); // Stop loading
+      }
+    };
 
-    if(removeEmail) {
-      profile.email = "";
-    }
+    fetchData();
+  }, [profileUserId, authToken, isAuthenticated]);
 
-    setUserData(profile);
-    setCreatedPosts(createdPosts);
-    setSavedPosts(savedPosts);
-  }, [profileUserId]);
+  if (isLoading) {
+    return <Spinner message="Loading profile..." />;
+  }
 
   if (!userData) {
     return <div>Loading...</div>;

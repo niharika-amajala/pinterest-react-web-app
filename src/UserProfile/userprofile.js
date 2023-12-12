@@ -44,7 +44,7 @@ function UserProfile() {
     setUserId(id);
 
     if(profileUserId) {
-      if(id !== parseInt(profileUserId)) {
+      if(id.id !== parseInt(profileUserId)) {
         setRemoveInfo(true);
         // removeEmail = true;
       }
@@ -56,9 +56,9 @@ function UserProfile() {
       removeEmail = true;
     }
 
-    const profile = await client.profile(id);
-    const createdPosts = await client.postsCreatedByUser(id);
-    const savedPosts = await client.postsSavedByUser(id);
+    const profile = await client.profile(id.id);
+    const createdPosts = await client.postsCreatedByUser(id.id);
+    const savedPosts = await client.postsSavedByUser(id.id);
 
     if(removeEmail) {
       profile.email = "";

@@ -35,6 +35,7 @@ function UserProfile() {
     let id;
     if(authToken) {
       id = await jwtDecode(authToken);
+      id = id.id;
     }
 
     else {
@@ -44,7 +45,7 @@ function UserProfile() {
     setUserId(id);
 
     if(profileUserId) {
-      if(id.id !== parseInt(profileUserId)) {
+      if(id !== parseInt(profileUserId)) {
         setRemoveInfo(true);
         // removeEmail = true;
       }
@@ -56,9 +57,9 @@ function UserProfile() {
       removeEmail = true;
     }
 
-    const profile = await client.profile(id.id);
-    const createdPosts = await client.postsCreatedByUser(id.id);
-    const savedPosts = await client.postsSavedByUser(id.id);
+    const profile = await client.profile(id);
+    const createdPosts = await client.postsCreatedByUser(id);
+    const savedPosts = await client.postsSavedByUser(id);
 
     if(removeEmail) {
       profile.email = "";

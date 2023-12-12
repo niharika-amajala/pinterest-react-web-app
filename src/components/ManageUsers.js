@@ -56,7 +56,7 @@ const ManageUsers = () => {
                         <TableRow key={user.id}>
                             <TableCell>{user.firstName}</TableCell>
                             <TableCell>{user.lastName}</TableCell>
-                            <TableCell>{user.id}</TableCell>
+                            <TableCell>{user.email}</TableCell>
                             <CenteredTableCell>
                                 <StatusIndicator status={user.status} />
                             </CenteredTableCell>

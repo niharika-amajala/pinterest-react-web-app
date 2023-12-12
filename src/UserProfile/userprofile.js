@@ -26,18 +26,33 @@ function UserProfile() {
   const [removeInfo, setRemoveInfo] = useState(false);
   const isSeller = userData.role === 'seller';
 
+  let isAuthenticated = useSelector((state) => state.authReducer.isAuthenticated);
+
   useEffect(async () => {
     let removeEmail = false;
-    let {id} = await jwtDecode(authToken);
+
+    let id;
+    if(authToken) {
+      id = await jwtDecode(authToken);
+    }
+
+    else {
+      id = 18;
+    }
 
     setUserId(id);
 
     if(profileUserId) {
       if(id !== parseInt(profileUserId)) {
         setRemoveInfo(true);
-        removeEmail = true;
+        // removeEmail = true;
       }
       id = profileUserId;
+    }
+
+    // handling the case for unauthorized users
+    if(!isAuthenticated) {
+      removeEmail = true;
     }
 
     const profile = await client.profile(id);
@@ -90,14 +105,27 @@ function UserProfile() {
             {isSeller && <Tab>Seller</Tab>}
           </TabList>
           <TabPanel>
+            {isAuthenticated ? (
+
             <UserPins posts={createdPosts} />
+            ) : (
+              <div>You need to be logged in to see the pins you created.</div>
+            )}
           </TabPanel>
           <TabPanel>
-            <UserPins posts={savedPosts} />
+            {isAuthenticated ? (
+              <UserPins posts={savedPosts} />
+            ) : (
+              <div>You need to be logged in to see the pins you saved.</div>
+            )}
           </TabPanel>
           {isSeller && (
             <TabPanel>
-              <SellerItems /> 
+              {isAuthenticated ? (
+                <SellerItems />
+              ) : (
+                <div>You need to be logged in to see your seller items.</div>
+              )}
             </TabPanel>
           )}
         </Tabs>
